@@ -48,7 +48,7 @@ html, body, [class*="css"] {{
 
 /* ── Fondo principal ── */
 .stApp {{
-    background: linear-gradient(180deg, #EAF1EA 0%, #E2EBE2 100%);
+    background: #F5F8F5;
 }}
 .block-container {{
     padding-top: 2rem;
@@ -71,6 +71,20 @@ section[data-testid="stSidebar"] input {{
     background: #11261B !important;
     border: 1px solid #2E5C46 !important;
     color: #FFFFFF !important;
+}}
+
+/* ── Expand sidebar by default ── */
+[data-testid="collapsedControl"] {{
+    display: none !important;
+}}
+section[data-testid="stSidebar"] {{
+    transform: translateX(0) !important;
+    visibility: visible !important;
+    width: 280px !important;
+    position: relative !important;
+}}
+.stMainBlockContainer {{
+    margin-left: 0;
 }}
 
 /* ── Ensure sidebar is visible ── */
