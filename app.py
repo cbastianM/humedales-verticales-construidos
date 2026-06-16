@@ -56,9 +56,16 @@ html, body, [class*="css"] {{
 }}
 
 /* ── Sidebar ── */
+[data-testid="stSidebar"] {{
+    background-color: #0A1810 !important;
+}}
 section[data-testid="stSidebar"] {{
-    background-color: {OSCURO} !important;
-    border-right: 2px solid {TEAL} !important;
+    background-color: #0A1810 !important;
+    background: #0A1810 !important;
+    border-right: 3px solid {VERDE} !important;
+}}
+section[data-testid="stSidebar"] > div {{
+    background-color: #0A1810 !important;
 }}
 section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {{
     color: #FFFFFF !important;
@@ -70,6 +77,10 @@ section[data-testid="stSidebar"] label {{
 section[data-testid="stSidebar"] input {{
     background: #11261B !important;
     border: 1px solid #2E5C46 !important;
+    color: #FFFFFF !important;
+}}
+section[data-testid="stSidebar"] .stSelectbox,
+section[data-testid="stSidebar"] .stNumberInput {{
     color: #FFFFFF !important;
 }}
 
