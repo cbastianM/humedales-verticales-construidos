@@ -519,10 +519,10 @@ MARGIN_DEFAULT = dict(l=30, r=20, t=50, b=40)
 MARGIN_POLAR   = dict(l=50, r=50, t=60, b=50)
 
 
-# ─── CONTROLES PRINCIPALES ────────────────────────────────────────────────────────
+# ─── CONFIGURACIÓN ────────────────────────────────────────────────────────
 nombre_proyecto = "Poza Séptica Piloto"
 modo = "Datos de ejemplo"
-poza = st.selectbox("Selecciona poza:", ["Poza #1 + #2", "Poza #1", "Poza #2"], label_visibility="collapsed", key="poza_selector")
+poza = "Poza #1 + #2 (Promedio)"  # Datos representativos
 
 
 
@@ -637,22 +637,16 @@ eff_global = np.mean([eff_dbo, eff_dqo, eff_sst, eff_ct])
 
 
 # ─── HEADER ──────────────────────────────────────────────────────────────────────
-# Crear un contenedor para el header con selector
-col_header_left, col_header_right = st.columns([4, 1], gap="large", vertical_alignment="center")
-
-with col_header_left:
-    st.markdown(f"""
-    <div class="app-header-left">
-      <div class="app-logo">🌿</div>
-      <div>
-        <div class="app-title">HydroWet · Diseño de Humedales Verticales</div>
-        <div class="app-subtitle">{nombre_proyecto} &nbsp;·&nbsp; {poza} &nbsp;·&nbsp; ⚡ {eff_global:.1f}%</div>
-      </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-with col_header_right:
-    st.markdown("<div style='height: 0.5rem;'></div>", unsafe_allow_html=True)
+# Header simplificado
+st.markdown(f"""
+<div class="app-header-left">
+  <div class="app-logo">🌿</div>
+  <div>
+    <div class="app-title">HydroWet · Diseño de Humedales Verticales</div>
+    <div class="app-subtitle">{nombre_proyecto} &nbsp;·&nbsp; {poza} &nbsp;·&nbsp; ⚡ {eff_global:.1f}%</div>
+  </div>
+</div>
+""", unsafe_allow_html=True)
 
 
 # ─── TABS ────────────────────────────────────────────────────────────────────────
