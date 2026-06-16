@@ -530,7 +530,6 @@ poza = st.selectbox("Selecciona poza:", ["Poza #1 + #2", "Poza #1", "Poza #2"], 
 if modo == "Datos de ejemplo":
     D = dict(
         poza=poza,
-        poza=poza,
         c_e=0.162,  c_s=0.080,
         ph_e=6.67,  ph_s=7.52,
         temp=29.12,
