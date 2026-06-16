@@ -406,7 +406,7 @@ section[data-testid="stSidebar"] > div {{
 .js-plotly-plot .plotly .main-svg {{ border-radius: 10px; }}
 
 /* ── Header app ── */
-.app-header {{
+.app-header-left {{
     background: linear-gradient(120deg, {OSCURO} 0%, {TEAL} 100%);
     border-radius: 14px;
     padding: 20px 28px;
@@ -520,21 +520,16 @@ MARGIN_POLAR   = dict(l=50, r=50, t=60, b=50)
 
 
 # ─── CONTROLES PRINCIPALES ────────────────────────────────────────────────────────
-st.markdown('<div style="height: 0.5rem;"></div>', unsafe_allow_html=True)
-col_ctrl1, col_ctrl2, col_ctrl3 = st.columns([2.2, 1, 1], gap="small")
-with col_ctrl1:
-    nombre_proyecto = st.text_input("Proyecto", "Poza Séptica Piloto", label_visibility="collapsed")
-with col_ctrl2:
-    modo = st.selectbox("Modo", ["Datos de ejemplo", "Ingreso manual"], label_visibility="collapsed")
-with col_ctrl3:
-    poza = st.selectbox("Poza", ["Poza #1 + #2", "Poza #1", "Poza #2"], label_visibility="collapsed")
-st.markdown('<div style="height: 0.3rem;"></div>', unsafe_allow_html=True)
+nombre_proyecto = "Poza Séptica Piloto"
+modo = "Datos de ejemplo"
+poza = st.selectbox("Selecciona poza:", ["Poza #1 + #2", "Poza #1", "Poza #2"], label_visibility="collapsed", key="poza_selector")
 
 
 
 # ─── DATOS ───────────────────────────────────────────────────────────────────────
 if modo == "Datos de ejemplo":
     D = dict(
+        poza=poza,
         poza=poza,
         c_e=0.162,  c_s=0.080,
         ph_e=6.67,  ph_s=7.52,
@@ -643,15 +638,22 @@ eff_global = np.mean([eff_dbo, eff_dqo, eff_sst, eff_ct])
 
 
 # ─── HEADER ──────────────────────────────────────────────────────────────────────
-st.markdown(f"""
-<div class="app-header">
-  <div class="app-logo">🌿</div>
-  <div style="flex: 1;">
-    <div class="app-title">HydroWet · Diseño de Humedales Verticales</div>
-    <div class="app-subtitle">{nombre_proyecto} &nbsp;·&nbsp; {D['poza']} &nbsp;·&nbsp; ⚡ {eff_global:.1f}%</div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
+# Crear un contenedor para el header con selector
+col_header_left, col_header_right = st.columns([4, 1], gap="large", vertical_alignment="center")
+
+with col_header_left:
+    st.markdown(f"""
+    <div class="app-header-left">
+      <div class="app-logo">🌿</div>
+      <div>
+        <div class="app-title">HydroWet · Diseño de Humedales Verticales</div>
+        <div class="app-subtitle">{nombre_proyecto} &nbsp;·&nbsp; {poza} &nbsp;·&nbsp; ⚡ {eff_global:.1f}%</div>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col_header_right:
+    st.markdown("<div style='height: 0.5rem;'></div>", unsafe_allow_html=True)
 
 
 # ─── TABS ────────────────────────────────────────────────────────────────────────
@@ -1091,7 +1093,7 @@ with tab5:
         <div class="reporte-card">
           <div class="reporte-title">📌 Datos del proyecto</div>
           <div class="reporte-row"><span class="reporte-key">Proyecto</span>       <span class="reporte-value">{nombre_proyecto}</span></div>
-          <div class="reporte-row"><span class="reporte-key">Sistema</span>        <span class="reporte-value">{D['poza']}</span></div>
+          <div class="reporte-row"><span class="reporte-key">Sistema</span>        <span class="reporte-value">{poza}</span></div>
           <div class="reporte-row"><span class="reporte-key">Tipo de humedal</span><span class="reporte-value">Vertical — flujo subsuperficial</span></div>
           <div class="reporte-row"><span class="reporte-key">Norma de ref.</span>  <span class="reporte-value">EPA 832-F-00-023 / CEPIS</span></div>
         </div>
