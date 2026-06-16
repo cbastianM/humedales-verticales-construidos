@@ -445,7 +445,6 @@ header[data-testid="stHeader"] {{
     background: transparent;
     border-bottom: none;
 }}
-div[data-testid="stToolbar"] {{ display: none; }}
 </style>
 """, unsafe_allow_html=True)
 
