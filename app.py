@@ -519,58 +519,19 @@ MARGIN_DEFAULT = dict(l=30, r=20, t=50, b=40)
 MARGIN_POLAR   = dict(l=50, r=50, t=60, b=50)
 
 
-# ─── SIDEBAR ─────────────────────────────────────────────────────────────────────
-with st.sidebar:
-    st.markdown("### 🌿 HydroWet")
-    st.markdown("---")
-    
-    modo = st.selectbox(
-        "Modo de entrada",
-        ["Datos de ejemplo", "Ingreso manual"],
-        help="Selecciona la fuente de datos"
-    )
+# ─── CONTROLES PRINCIPALES ────────────────────────────────────────────────────────
+st.markdown("### ⚙️ Configuración del Proyecto", unsafe_allow_html=True)
 
-    st.markdown("---")
-    st.markdown("**Configuración del sistema**")
-    
-    nombre_proyecto = st.text_input("Nombre del proyecto", "Poza Séptica Piloto")
-    poza = st.selectbox("Poza de referencia", ["Poza #1 + Poza #2 (Promedio)", "Poza #1", "Poza #2"])
-    
-    st.markdown("---")
-    
-    if modo == "Ingreso manual":
-        st.markdown("**Parámetros de entrada**")
-        
-        c_e = st.number_input("Caudal entrada (L/s)", 0.05, 2.0, 0.162, 0.01)
-        c_s = st.number_input("Caudal salida (L/s)",  0.01, 1.0, 0.080, 0.01)
-        ph_e = st.number_input("pH entrada", 5.0, 9.0, 6.67, 0.01)
-        ph_s = st.number_input("pH salida",  5.0, 9.0, 7.52, 0.01)
-        dbo_e = st.number_input("DBO₅ entrada (mg/L)", 10,  5000, 625,  10)
-        dbo_s = st.number_input("DBO₅ salida (mg/L)",   1,   500,  41,   1)
-        dqo_e = st.number_input("DQO entrada (mg/L)",   50, 10000, 1249,  50)
-        dqo_s = st.number_input("DQO salida (mg/L)",    10,  1000,  98,   10)
-        sst_e = st.number_input("SST entrada (mg/L)",   50, 10000, 2644, 100)
-        sst_s = st.number_input("SST salida (mg/L)",     1,   200,  23,    1)
-        sed_e = st.number_input("Sedimentables entrada (mL/L)",  0.0, 200.0, 69.5, 0.5)
-        sed_s = st.number_input("Sedimentables salida (mL/L)",   0.0,  10.0,  0.05, 0.01)
-        ct_e  = st.number_input("Col. Totales entrada (NMP/100mL)", 100, 10000000, 4551472, 10000)
-        ct_s  = st.number_input("Col. Totales salida (NMP/100mL)",   10,  1000000,  393170,  1000)
-        cf_e  = st.number_input("Col. Fecales entrada (NMP/100mL)",   10,  1000000,  337465, 10000)
-        cf_s  = st.number_input("Col. Fecales salida (NMP/100mL)",     1,   100000,   18009,  1000)
-        fen_e = st.number_input("Fenoles entrada (mg/L)", 0.0, 2.0, 0.182, 0.001)
-        fen_s = st.number_input("Fenoles salida (mg/L)",  0.0, 0.5, 0.150, 0.001)
-        gra_e = st.number_input("Grasas entrada (mg/L)", 0, 5000, 1349, 50)
-        gra_s = st.number_input("Grasas salida (mg/L)",  0,  200,   13,  1)
-        sur_e = st.number_input("Surfactantes entrada (mg/L)", 0.0, 20.0, 4.92, 0.01)
-        sur_s = st.number_input("Surfactantes salida (mg/L)",  0.0, 10.0, 1.96, 0.01)
-        temp  = st.number_input("Temperatura (°C)", 20.0, 35.0, 29.1, 0.1)
-        cond_e = st.number_input("Conductividad entrada (µS/cm)", 100, 3000, 1052, 10)
-        cond_s = st.number_input("Conductividad salida (µS/cm)",  100, 2000, 891,  10)
-        alc_e = st.number_input("Alcalinidad entrada (mg CaCO₃/L)", 50, 1000, 316, 5)
-        alc_s = st.number_input("Alcalinidad salida (mg CaCO₃/L)",  50,  800, 247, 5)
-        
-    st.markdown("---")
-    st.markdown('<span style="color:#7FA889;font-size:0.74rem;font-weight:500;">HydroWet v1.0 · 2025</span>', unsafe_allow_html=True)
+col_config1, col_config2, col_config3 = st.columns([2, 1, 1])
+with col_config1:
+    nombre_proyecto = st.text_input("📋 Nombre del proyecto", "Poza Séptica Piloto")
+with col_config2:
+    modo = st.selectbox("Modo", ["Datos de ejemplo", "Ingreso manual"], label_visibility="collapsed")
+with col_config3:
+    poza = st.selectbox("Poza ref.", ["Poza #1 + #2", "Poza #1", "Poza #2"], label_visibility="collapsed")
+
+st.divider()
+
 
 
 # ─── DATOS ───────────────────────────────────────────────────────────────────────
@@ -610,6 +571,54 @@ else:
         cond_e=float(cond_e), cond_s=float(cond_s),
         alc_e=float(alc_e),  alc_s=float(alc_s),
     )
+
+# Parámetros adicionales (si ingreso manual)
+if modo == "Ingreso manual":
+    with st.expander("📊 Parámetros detallados (Ingreso manual)", expanded=True):
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            c_e = st.number_input("Caudal entrada (L/s)", 0.05, 2.0, 0.162, 0.01)
+            ph_e = st.number_input("pH entrada", 5.0, 9.0, 6.67, 0.01)
+            dbo_e = st.number_input("DBO₅ entrada (mg/L)", 10, 5000, 625, 10)
+        with col2:
+            c_s = st.number_input("Caudal salida (L/s)", 0.01, 1.0, 0.080, 0.01)
+            ph_s = st.number_input("pH salida", 5.0, 9.0, 7.52, 0.01)
+            dbo_s = st.number_input("DBO₅ salida (mg/L)", 1, 500, 41, 1)
+        with col3:
+            dqo_e = st.number_input("DQO entrada (mg/L)", 50, 10000, 1249, 50)
+            dqo_s = st.number_input("DQO salida (mg/L)", 10, 1000, 98, 10)
+            sst_e = st.number_input("SST entrada (mg/L)", 50, 10000, 2644, 100)
+        with col4:
+            sst_s = st.number_input("SST salida (mg/L)", 1, 200, 23, 1)
+            sed_e = st.number_input("Sedimentables entrada (mL/L)", 0.0, 200.0, 69.5, 0.5)
+            sed_s = st.number_input("Sedimentables salida (mL/L)", 0.0, 10.0, 0.05, 0.01)
+        
+        col5, col6, col7, col8 = st.columns(4)
+        with col5:
+            ct_e = st.number_input("Col. Totales entrada (NMP/100mL)", 100, 10000000, 4551472, 10000)
+            cf_e = st.number_input("Col. Fecales entrada (NMP/100mL)", 10, 1000000, 337465, 10000)
+        with col6:
+            ct_s = st.number_input("Col. Totales salida (NMP/100mL)", 10, 1000000, 393170, 1000)
+            cf_s = st.number_input("Col. Fecales salida (NMP/100mL)", 1, 100000, 18009, 1000)
+        with col7:
+            fen_e = st.number_input("Fenoles entrada (mg/L)", 0.0, 2.0, 0.182, 0.001)
+            gra_e = st.number_input("Grasas entrada (mg/L)", 0, 5000, 1349, 50)
+        with col8:
+            fen_s = st.number_input("Fenoles salida (mg/L)", 0.0, 0.5, 0.150, 0.001)
+            gra_s = st.number_input("Grasas salida (mg/L)", 0, 200, 13, 1)
+        
+        col9, col10, col11 = st.columns(3)
+        with col9:
+            sur_e = st.number_input("Surfactantes entrada (mg/L)", 0.0, 20.0, 4.92, 0.01)
+            temp = st.number_input("Temperatura (°C)", 20.0, 35.0, 29.1, 0.1)
+        with col10:
+            sur_s = st.number_input("Surfactantes salida (mg/L)", 0.0, 10.0, 1.96, 0.01)
+            cond_e = st.number_input("Conductividad entrada (µS/cm)", 100, 3000, 1052, 10)
+        with col11:
+            alc_e = st.number_input("Alcalinidad entrada (mg CaCO₃/L)", 50, 1000, 316, 5)
+            alc_s = st.number_input("Alcalinidad salida (mg CaCO₃/L)", 50, 800, 247, 5)
+            cond_s = st.number_input("Conductividad salida (µS/cm)", 100, 2000, 891, 10)
+
 
 # Cálculos de diseño
 np.random.seed(42)
