@@ -702,62 +702,62 @@ with tab1:
         params  = ["DBO₅", "DQO", "SST", "Sedimentables", "Col. Totales", "Col. Fecales", "Grasas", "Surfactantes"]
         valores = [eff_dbo, eff_dqo, eff_sst, eff_sed, eff_ct, eff_cf, eff_gra, eff_sur]
 
-        fig_radar = go.Figure(go.Scatterpolar(
+        fig_radar = go.Figure()
+        fig_radar.add_trace(go.Scatterpolar(
             r=valores + [valores[0]],
             theta=params + [params[0]],
-            fill='toself',
-            fillcolor=VERDE_O2,
-            line=dict(color=VERDE, width=2),
-            marker=dict(size=6, color=VERDE),
+            fill="toself",
+            fillcolor="rgba(14,158,99,0.18)",
+            line=dict(color=VERDE_D, width=2.5),
+            marker=dict(size=9, color=VERDE_D, symbol="circle",
+                        line=dict(color="white", width=2)),
+            name="Eficiencia",
+            hovertemplate="<b>%{theta}</b><br>Eficiencia: <b>%{r:.1f}%</b><extra></extra>",
+        ))
+        # Zona objetivo ≥80%
+        fig_radar.add_trace(go.Scatterpolar(
+            r=[80]*len(params) + [80],
+            theta=params + [params[0]],
+            mode="lines",
+            line=dict(color=AMBAR, width=1.5, dash="dot"),
+            name="Objetivo 80%",
+            hoverinfo="skip",
         ))
         fig_radar.update_layout(
-            **{**PLOTLY_LAYOUT, "margin": MARGIN_POLAR},
+            **{**PLOTLY_LAYOUT, "margin": dict(l=60, r=60, t=70, b=60)},
             polar=dict(
-                bgcolor="#F8FAF8",
+                bgcolor="white",
                 radialaxis=dict(
                     visible=True,
                     range=[0, 100],
                     ticksuffix="%",
-                    tickfont=dict(size=12),
-                    gridcolor=BORDE,
+                    tickfont=dict(size=12, color=GRIS),
+                    gridcolor="#E8F0E8",
+                    linecolor=BORDE,
+                    tickvals=[20, 40, 60, 80, 100],
                 ),
                 angularaxis=dict(
-                    tickfont=dict(size=12),
-                    gridcolor=BORDE,
+                    tickfont=dict(size=13, color=TEXTO, family="Space Grotesk"),
+                    linecolor=BORDE,
+                    gridcolor="#E8F0E8",
                 )
             ),
-            title=dict(text="Perfil de eficiencias", font=dict(family="Space Grotesk", size=16, color=TEXTO)),
-            height=430,
+            legend=dict(
+                orientation="h", x=0.5, xanchor="center", y=-0.12,
+                bgcolor="white", bordercolor=BORDE, borderwidth=1,
+                font=dict(size=13),
+            ),
+            title=dict(
+                text="Perfil de eficiencia de remoción",
+                font=dict(family="Space Grotesk", size=16, color=TEXTO),
+                x=0.5, xanchor="center",
+            ),
+            height=460,
         )
         st.plotly_chart(fig_radar, use_container_width=True)
 
     # Fila 3 — tendencia simulada mensual
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown('<div class="section-header" style="font-size:1rem;">Tendencia mensual simulada (30 días)</div>', unsafe_allow_html=True)
-
-    dias = np.arange(1, 31)
-    var  = np.random.normal(1, 0.07, 30)
-    dbo_ent_t = np.clip(D["dbo_e"] * var, D["dbo_e"]*0.75, D["dbo_e"]*1.25)
-    dbo_sal_t = np.clip(D["dbo_s"] * np.random.normal(1, 0.12, 30), D["dbo_s"]*0.5, D["dbo_s"]*1.6)
-
-    fig_trend = go.Figure()
-    fig_trend.add_trace(go.Scatter(x=dias, y=dbo_ent_t, name="DBO₅ Entrada",
-        line=dict(color=ROJO, width=2), mode="lines+markers", marker_size=4))
-    fig_trend.add_trace(go.Scatter(x=dias, y=dbo_sal_t, name="DBO₅ Salida",
-        line=dict(color=VERDE, width=2), mode="lines+markers", marker_size=4,
-        fill="tonexty", fillcolor="rgba(20,168,109,0.08)"))
-    fig_trend.add_hline(y=25, line_dash="dash", line_color=AMBAR,
-        annotation_text="Límite norma 25 mg/L", annotation_position="top right",
-        annotation_font=dict(color=AMBAR, size=11))
-    fig_trend.update_layout(
-        **{**PLOTLY_LAYOUT, "margin": MARGIN_DEFAULT},
-        height=280,
-        title=dict(text="DBO₅ Entrada vs Salida (mg/L)", font=dict(family="Space Grotesk", size=13, color=TEXTO)),
-        xaxis=dict(title="Día", gridcolor=BORDE, showgrid=True),
-        yaxis=dict(title="mg O₂/L", gridcolor=BORDE, showgrid=True),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-    )
-    st.plotly_chart(fig_trend, use_container_width=True)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -803,29 +803,77 @@ with tab2:
     col_ph, col_cond = st.columns(2)
     with col_ph:
         fig_ph = go.Figure(data=[
-            go.Bar(name="Entrada", x=["pH"], y=[D["ph_e"]], marker_color=ROJO,
-                   text=[f"{D['ph_e']:.2f}"], textposition="auto"),
-            go.Bar(name="Salida",  x=["pH"], y=[D["ph_s"]], marker_color=VERDE,
-                   text=[f"{D['ph_s']:.2f}"], textposition="auto"),
+            go.Bar(name="Entrada", x=["pH"],
+                   y=[D["ph_e"]], marker_color=ROJO,
+                   marker_line=dict(color="white", width=2),
+                   text=[f"<b>{D['ph_e']:.2f}</b>"], textposition="outside",
+                   textfont=dict(size=14, color=ROJO),
+                   width=0.3,
+                   hovertemplate="<b>pH Entrada</b><br>%{y:.2f} u pH<extra></extra>"),
+            go.Bar(name="Salida", x=["pH"],
+                   y=[D["ph_s"]], marker_color=VERDE,
+                   marker_line=dict(color="white", width=2),
+                   text=[f"<b>{D['ph_s']:.2f}</b>"], textposition="outside",
+                   textfont=dict(size=14, color=VERDE_D),
+                   width=0.3,
+                   hovertemplate="<b>pH Salida</b><br>%{y:.2f} u pH<extra></extra>"),
         ])
-        fig_ph.add_hrect(y0=6.5, y1=8.5, fillcolor="rgba(20,168,109,0.08)",
-                         line_width=0, annotation_text="Rango óptimo 6.5–8.5", annotation_position="top right")
-        fig_ph.update_layout(**{**PLOTLY_LAYOUT, "margin": MARGIN_DEFAULT}, height=260, barmode="group",
-            title=dict(text="pH — Entrada vs Salida", font=dict(family="Space Grotesk", size=15)),
-            yaxis=dict(range=[5.5, 9.5], gridcolor=BORDE))
+        fig_ph.add_hrect(y0=6.5, y1=8.5, fillcolor="rgba(14,158,99,0.07)",
+                         line_width=1.5, line_color=VERDE_O2, line_dash="dot",
+                         annotation_text="Rango óptimo (6.5–8.5)",
+                         annotation_position="top right",
+                         annotation_font=dict(size=12, color=VERDE_D))
+        fig_ph.update_layout(**{**PLOTLY_LAYOUT, "margin": dict(l=40, r=20, t=60, b=40)},
+            height=310, barmode="group",
+            title=dict(text="⬤ pH — Entrada vs Salida", font=dict(family="Space Grotesk", size=15, color=TEXTO)),
+            yaxis=dict(range=[5.0, 10.2], gridcolor="#EDF3ED", title="Unidades de pH",
+                       title_font=dict(size=12), tickfont=dict(size=12)),
+            xaxis=dict(showgrid=False, tickfont=dict(size=13)),
+            legend=dict(orientation="h", x=0.5, xanchor="center", y=-0.15,
+                        font=dict(size=13), bgcolor="white", bordercolor=BORDE, borderwidth=1),
+            bargap=0.4,
+        )
         st.plotly_chart(fig_ph, use_container_width=True)
 
     with col_cond:
-        categorias = ["Conductividad", "Alcalinidad"]
+        categorias = ["Conductividad (µS/cm)", "Alcalinidad (mg CaCO₃/L)"]
+        e_vals_cond = [D["cond_e"], D["alc_e"]]
+        s_vals_cond = [D["cond_s"], D["alc_s"]]
+        eff_cond_vals = [eff(D["cond_e"], D["cond_s"]), eff(D["alc_e"], D["alc_s"])]
+
         fig_cond = go.Figure(data=[
-            go.Bar(name="Entrada", x=categorias,
-                   y=[D["cond_e"], D["alc_e"]], marker_color=ROJO),
-            go.Bar(name="Salida",  x=categorias,
-                   y=[D["cond_s"], D["alc_s"]], marker_color=VERDE),
+            go.Bar(name="Entrada",
+                   x=categorias, y=e_vals_cond,
+                   marker_color=ROJO, marker_opacity=0.88,
+                   marker_line=dict(color="white", width=2),
+                   text=[f"<b>{v:.0f}</b>" for v in e_vals_cond],
+                   textposition="outside", textfont=dict(size=13, color=ROJO),
+                   hovertemplate="<b>%{x}</b><br>Entrada: <b>%{y:.1f}</b><extra></extra>"),
+            go.Bar(name="Salida",
+                   x=categorias, y=s_vals_cond,
+                   marker_color=VERDE, marker_opacity=0.88,
+                   marker_line=dict(color="white", width=2),
+                   text=[f"<b>{v:.0f}</b>" for v in s_vals_cond],
+                   textposition="outside", textfont=dict(size=13, color=VERDE_D),
+                   hovertemplate="<b>%{x}</b><br>Salida: <b>%{y:.1f}</b><extra></extra>"),
         ])
-        fig_cond.update_layout(**{**PLOTLY_LAYOUT, "margin": MARGIN_DEFAULT}, height=260, barmode="group",
-            title=dict(text="Conductividad (µS/cm) y Alcalinidad (mg CaCO₃/L)", font=dict(family="Space Grotesk", size=15)),
-            yaxis=dict(gridcolor=BORDE))
+        for xi, (cat, ef) in enumerate(zip(categorias, eff_cond_vals)):
+            fig_cond.add_annotation(
+                x=cat, y=max(e_vals_cond[xi], s_vals_cond[xi]) * 1.28,
+                text=f"<b>↓{ef:.0f}%</b>",
+                showarrow=False, font=dict(size=12, color=VERDE_D, family="Space Grotesk"),
+                bgcolor=VERDE_O2, borderpad=3, borderwidth=0
+            )
+        fig_cond.update_layout(**{**PLOTLY_LAYOUT, "margin": dict(l=40, r=20, t=70, b=40)},
+            height=310, barmode="group",
+            title=dict(text="⬤ Conductividad y Alcalinidad", font=dict(family="Space Grotesk", size=15, color=TEXTO)),
+            yaxis=dict(gridcolor="#EDF3ED", title="Concentración",
+                       title_font=dict(size=12), tickfont=dict(size=12)),
+            xaxis=dict(showgrid=False, tickfont=dict(size=12)),
+            legend=dict(orientation="h", x=0.5, xanchor="center", y=-0.15,
+                        font=dict(size=13), bgcolor="white", bordercolor=BORDE, borderwidth=1),
+            bargap=0.35,
+        )
         st.plotly_chart(fig_cond, use_container_width=True)
 
 
@@ -844,91 +892,236 @@ with tab3:
         entrada_org = [D["dbo_e"], D["dqo_e"]]
         salida_org  = [D["dbo_s"], D["dqo_s"]]
 
+        effs_org = [eff(e, s) for e, s in zip(entrada_org, salida_org)]
         fig_org = go.Figure()
-        fig_org.add_trace(go.Bar(name="Entrada", x=categorias_org, y=entrada_org,
-            marker_color=ROJO, marker_opacity=0.85,
-            text=[f"{v:.1f}" for v in entrada_org], textposition="auto"))
-        fig_org.add_trace(go.Bar(name="Salida", x=categorias_org, y=salida_org,
-            marker_color=VERDE, text=[f"{v:.1f}" for v in salida_org], textposition="auto"))
-        fig_org.update_layout(**{**PLOTLY_LAYOUT, "margin": MARGIN_DEFAULT}, barmode="group", height=340,
-            title=dict(text="Carga orgánica (mg O₂/L)", font=dict(family="Space Grotesk", size=15)),
-            yaxis=dict(gridcolor=BORDE), xaxis=dict(gridcolor="white"))
+        fig_org.add_trace(go.Bar(
+            name="Entrada",
+            x=categorias_org, y=entrada_org,
+            marker=dict(color=ROJO, opacity=0.88, line=dict(color="white", width=2)),
+            text=[f"<b>{v:.1f}</b>" for v in entrada_org],
+            textposition="outside", textfont=dict(size=14, color=ROJO),
+            hovertemplate="<b>%{x} Entrada</b><br>%{y:.1f} mg O₂/L<extra></extra>",
+            width=0.35,
+        ))
+        fig_org.add_trace(go.Bar(
+            name="Salida",
+            x=categorias_org, y=salida_org,
+            marker=dict(color=VERDE, opacity=0.90, line=dict(color="white", width=2)),
+            text=[f"<b>{v:.1f}</b>" for v in salida_org],
+            textposition="outside", textfont=dict(size=14, color=VERDE_D),
+            hovertemplate="<b>%{x} Salida</b><br>%{y:.1f} mg O₂/L<extra></extra>",
+            width=0.35,
+        ))
+        max_org = max(entrada_org)
+        for xi, (cat, ef) in enumerate(zip(categorias_org, effs_org)):
+            fig_org.add_annotation(
+                x=cat, y=entrada_org[xi] * 1.22,
+                text=f"<b>↓{ef:.1f}%</b> remoción",
+                showarrow=False, font=dict(size=12, color=VERDE_D, family="Space Grotesk"),
+                bgcolor=VERDE_O2, borderpad=4, borderwidth=0
+            )
+        fig_org.update_layout(**{**PLOTLY_LAYOUT, "margin": dict(l=40, r=20, t=75, b=40)},
+            barmode="group", height=380,
+            title=dict(text="⬤ Carga orgánica — Demanda de Oxígeno (mg O₂/L)", font=dict(family="Space Grotesk", size=15, color=TEXTO)),
+            yaxis=dict(gridcolor="#EDF3ED", title="mg O₂/L", title_font=dict(size=13),
+                       tickfont=dict(size=12), range=[0, max_org * 1.4]),
+            xaxis=dict(showgrid=False, tickfont=dict(size=14, family="Space Grotesk")),
+            legend=dict(orientation="h", x=0.5, xanchor="center", y=-0.12,
+                        font=dict(size=13), bgcolor="white", bordercolor=BORDE, borderwidth=1),
+            bargap=0.3,
+        )
         st.plotly_chart(fig_org, use_container_width=True)
 
     with colB:
+        eff_sst_g = eff(D["sst_e"], D["sst_s"])
+        eff_sed_g = eff(D["sed_e"], D["sed_s"])
         fig_sol = go.Figure()
-        fig_sol.add_trace(go.Bar(name="Entrada SST", x=["SST"], y=[D["sst_e"]],
-            marker_color=ROJO, marker_opacity=0.85,
-            text=[f"{D['sst_e']:.0f}"], textposition="auto"))
-        fig_sol.add_trace(go.Bar(name="Salida SST", x=["SST"], y=[D["sst_s"]],
-            marker_color=VERDE, text=[f"{D['sst_s']:.1f}"], textposition="auto"))
-        fig_sol.add_trace(go.Bar(name="Entrada Sed.", x=["Sedimentables"], y=[D["sed_e"]],
-            marker_color=ROJO, marker_opacity=0.85,
-            text=[f"{D['sed_e']:.1f}"], textposition="auto"))
-        fig_sol.add_trace(go.Bar(name="Salida Sed.", x=["Sedimentables"], y=[D["sed_s"]],
-            marker_color=VERDE, text=[f"{D['sed_s']:.2f}"], textposition="auto"))
-        fig_sol.update_layout(**{**PLOTLY_LAYOUT, "margin": MARGIN_DEFAULT}, barmode="group", height=340,
-            showlegend=False,
-            title=dict(text="Sólidos totales: SST (mg/L) y Sedimentables (mL/L)", font=dict(family="Space Grotesk", size=15)),
-            yaxis=dict(gridcolor=BORDE))
+        # Solo dos grupos: SST y Sedimentables
+        fig_sol.add_trace(go.Bar(
+            name="Entrada", x=["SST (mg/L)", "Sedimentables (mL/L)"],
+            y=[D["sst_e"], D["sed_e"]],
+            marker=dict(color=ROJO, opacity=0.88, line=dict(color="white", width=2)),
+            text=[f"<b>{D['sst_e']:.0f}</b>", f"<b>{D['sed_e']:.1f}</b>"],
+            textposition="outside", textfont=dict(size=14, color=ROJO),
+            hovertemplate="<b>%{x} Entrada</b><br>%{y:.2f}<extra></extra>",
+            width=0.35,
+        ))
+        fig_sol.add_trace(go.Bar(
+            name="Salida", x=["SST (mg/L)", "Sedimentables (mL/L)"],
+            y=[D["sst_s"], D["sed_s"]],
+            marker=dict(color=VERDE, opacity=0.90, line=dict(color="white", width=2)),
+            text=[f"<b>{D['sst_s']:.1f}</b>", f"<b>{D['sed_s']:.2f}</b>"],
+            textposition="outside", textfont=dict(size=14, color=VERDE_D),
+            hovertemplate="<b>%{x} Salida</b><br>%{y:.2f}<extra></extra>",
+            width=0.35,
+        ))
+        for xi, (cat, ef) in enumerate(zip(["SST (mg/L)", "Sedimentables (mL/L)"], [eff_sst_g, eff_sed_g])):
+            fig_sol.add_annotation(
+                x=cat, y=[D["sst_e"], D["sed_e"]][xi] * 1.22,
+                text=f"<b>↓{ef:.1f}%</b> remoción",
+                showarrow=False, font=dict(size=12, color=VERDE_D, family="Space Grotesk"),
+                bgcolor=VERDE_O2, borderpad=4, borderwidth=0
+            )
+        fig_sol.update_layout(**{**PLOTLY_LAYOUT, "margin": dict(l=40, r=20, t=75, b=40)},
+            barmode="group", height=380,
+            title=dict(text="⬤ Sólidos — SST y Sedimentables", font=dict(family="Space Grotesk", size=15, color=TEXTO)),
+            yaxis=dict(gridcolor="#EDF3ED", title="Concentración", title_font=dict(size=13),
+                       tickfont=dict(size=12)),
+            xaxis=dict(showgrid=False, tickfont=dict(size=13, family="Space Grotesk")),
+            legend=dict(orientation="h", x=0.5, xanchor="center", y=-0.12,
+                        font=dict(size=13), bgcolor="white", bordercolor=BORDE, borderwidth=1),
+            bargap=0.3,
+        )
         st.plotly_chart(fig_sol, use_container_width=True)
 
     # Fila B — Coliformes (log) y contaminantes específicos
     colC, colD = st.columns(2)
 
     with colC:
-        cats_col = ["Col. Totales", "Col. Fecales"]
+        cats_col = ["Coliformes Totales", "Coliformes Fecales"]
+        e_col = [D["ct_e"], D["cf_e"]]
+        s_col = [D["ct_s"], D["cf_s"]]
+        eff_col_vals = [eff(D["ct_e"], D["ct_s"]), eff(D["cf_e"], D["cf_s"])]
+        normas_col = [1000, 200]
+
         fig_col = go.Figure()
-        fig_col.add_trace(go.Bar(name="Entrada", x=cats_col,
-            y=[D["ct_e"], D["cf_e"]], marker_color=ROJO, marker_opacity=0.85))
-        fig_col.add_trace(go.Bar(name="Salida",  x=cats_col,
-            y=[D["ct_s"], D["cf_s"]], marker_color=VERDE))
-        fig_col.update_layout(**{**PLOTLY_LAYOUT, "margin": MARGIN_DEFAULT}, barmode="group", height=320,
-            title=dict(text="Coliformes (NMP/100mL) — escala logarítmica", font=dict(family="Space Grotesk", size=15)),
-            yaxis=dict(type="log", gridcolor=BORDE, title="NMP/100mL (log)"))
+        fig_col.add_trace(go.Bar(
+            name="Entrada (NMP/100mL)", x=cats_col, y=e_col,
+            marker=dict(color=ROJO, opacity=0.88, line=dict(color="white", width=2)),
+            text=[f"<b>{v:.2e}</b>" for v in e_col],
+            textposition="outside", textfont=dict(size=12, color=ROJO),
+            hovertemplate="<b>%{x} Entrada</b><br>%{y:,.0f} NMP/100mL<extra></extra>",
+            width=0.35,
+        ))
+        fig_col.add_trace(go.Bar(
+            name="Salida (NMP/100mL)", x=cats_col, y=s_col,
+            marker=dict(color=VERDE, opacity=0.90, line=dict(color="white", width=2)),
+            text=[f"<b>{v:.2e}</b>" for v in s_col],
+            textposition="outside", textfont=dict(size=12, color=VERDE_D),
+            hovertemplate="<b>%{x} Salida</b><br>%{y:,.0f} NMP/100mL<extra></extra>",
+            width=0.35,
+        ))
+        for xi, (ef, norma) in enumerate(zip(eff_col_vals, normas_col)):
+            fig_col.add_annotation(
+                x=cats_col[xi], y=e_col[xi] * 3.5,
+                text=f"<b>↓{ef:.1f}%</b> remoción",
+                showarrow=False, font=dict(size=12, color=VERDE_D, family="Space Grotesk"),
+                bgcolor=VERDE_O2, borderpad=4, borderwidth=0
+            )
+            fig_col.add_hline(y=norma, line_dash="dot", line_color=AMBAR, line_width=1.5,
+                annotation_text=f"Límite {norma} NMP",
+                annotation_position="right",
+                annotation_font=dict(size=11, color=AMBAR))
+        fig_col.update_layout(**{**PLOTLY_LAYOUT, "margin": dict(l=40, r=80, t=75, b=40)},
+            barmode="group", height=380,
+            title=dict(text="⬤ Coliformes — Escala logarítmica", font=dict(family="Space Grotesk", size=15, color=TEXTO)),
+            yaxis=dict(type="log", gridcolor="#EDF3ED", title="NMP/100mL (escala log)",
+                       title_font=dict(size=13), tickfont=dict(size=12)),
+            xaxis=dict(showgrid=False, tickfont=dict(size=13, family="Space Grotesk")),
+            legend=dict(orientation="h", x=0.5, xanchor="center", y=-0.12,
+                        font=dict(size=13), bgcolor="white", bordercolor=BORDE, borderwidth=1),
+            bargap=0.3,
+        )
         st.plotly_chart(fig_col, use_container_width=True)
 
     with colD:
-        cats_esp = ["Grasas (mg/L)", "Surfactantes (mg/L)", "Fenoles (mg/L)"]
-        e_vals = [D["gra_e"], D["sur_e"], D["fen_e"] * 100]   # fenoles ×100 para escala
-        s_vals = [D["gra_s"], D["sur_s"], D["fen_s"] * 100]
+        cats_esp = ["Grasas", "Surfactantes", "Fenoles (×100)"]
+        e_vals_esp = [D["gra_e"], D["sur_e"], D["fen_e"] * 100]
+        s_vals_esp = [D["gra_s"], D["sur_s"], D["fen_s"] * 100]
+        eff_esp = [eff(D["gra_e"], D["gra_s"]), eff(D["sur_e"], D["sur_s"]), eff(D["fen_e"], D["fen_s"])]
+        unidades_esp = ["mg/L", "mg/L", "×100 mg/L"]
+        normas_esp = [20, 2, 15]  # fenoles 0.15 ×100
 
         fig_esp = go.Figure()
-        fig_esp.add_trace(go.Scatter(x=cats_esp, y=e_vals, name="Entrada",
-            mode="lines+markers", line=dict(color=ROJO, width=2), marker_size=10,
-            fill="tozeroy", fillcolor="rgba(212,92,58,0.07)"))
-        fig_esp.add_trace(go.Scatter(x=cats_esp, y=s_vals, name="Salida",
-            mode="lines+markers", line=dict(color=VERDE, width=2), marker_size=10,
-            fill="tozeroy", fillcolor=VERDE_O))
-        fig_esp.update_layout(**{**PLOTLY_LAYOUT, "margin": MARGIN_DEFAULT}, height=320,
-            title=dict(text="Contaminantes específicos (Fenoles ×100 para escala)", font=dict(family="Space Grotesk", size=15)),
-            yaxis=dict(gridcolor=BORDE))
+        fig_esp.add_trace(go.Bar(
+            name="Entrada", x=cats_esp, y=e_vals_esp,
+            marker=dict(color=ROJO, opacity=0.88, line=dict(color="white", width=2)),
+            text=[f"<b>{v:.1f}</b>" for v in e_vals_esp],
+            textposition="outside", textfont=dict(size=13, color=ROJO),
+            hovertemplate="<b>%{x} Entrada</b><br>%{y:.2f}<extra></extra>",
+            width=0.35,
+        ))
+        fig_esp.add_trace(go.Bar(
+            name="Salida", x=cats_esp, y=s_vals_esp,
+            marker=dict(color=VERDE, opacity=0.90, line=dict(color="white", width=2)),
+            text=[f"<b>{v:.2f}</b>" for v in s_vals_esp],
+            textposition="outside", textfont=dict(size=13, color=VERDE_D),
+            hovertemplate="<b>%{x} Salida</b><br>%{y:.2f}<extra></extra>",
+            width=0.35,
+        ))
+        for xi, (cat, ef, norma) in enumerate(zip(cats_esp, eff_esp, normas_esp)):
+            fig_esp.add_annotation(
+                x=cat, y=e_vals_esp[xi] * 1.22,
+                text=f"<b>↓{ef:.1f}%</b>",
+                showarrow=False, font=dict(size=12, color=VERDE_D, family="Space Grotesk"),
+                bgcolor=VERDE_O2, borderpad=3, borderwidth=0
+            )
+            fig_esp.add_hline(y=norma, line_dash="dot", line_color=AMBAR, line_width=1.5)
+        fig_esp.update_layout(**{**PLOTLY_LAYOUT, "margin": dict(l=40, r=20, t=75, b=40)},
+            barmode="group", height=380,
+            title=dict(text="⬤ Grasas, Surfactantes y Fenoles (Fenoles ×100)", font=dict(family="Space Grotesk", size=15, color=TEXTO)),
+            yaxis=dict(gridcolor="#EDF3ED", title="mg/L", title_font=dict(size=13), tickfont=dict(size=12)),
+            xaxis=dict(showgrid=False, tickfont=dict(size=13, family="Space Grotesk")),
+            legend=dict(orientation="h", x=0.5, xanchor="center", y=-0.12,
+                        font=dict(size=13), bgcolor="white", bordercolor=BORDE, borderwidth=1),
+            bargap=0.3,
+        )
         st.plotly_chart(fig_esp, use_container_width=True)
 
     # Fila C — Diagrama de Sankey simplificado
     st.markdown('<div class="section-header" style="font-size:1rem;margin-top:10px;">Flujo de remoción de contaminantes</div>', unsafe_allow_html=True)
 
-    labels = ["Agua Entrada", "DBO₅ Removida", "DQO Removida", "SST Removida",
-              "DBO₅ Efluente", "DQO Efluente", "SST Efluente", "Efluente Final"]
-    source = [0, 0, 0, 0, 0, 0]
-    target = [4, 1, 5, 2, 6, 3]
-    values_sank = [D["dbo_s"], D["dbo_e"]-D["dbo_s"], D["dqo_s"], D["dqo_e"]-D["dqo_s"],
-                   D["sst_s"], D["sst_e"]-D["sst_s"]]
-
+    # Sankey con flujo: Afluente → Removido + Efluente
+    s_labels = [
+        "Afluente",
+        f"DBO₅ Removida<br>({eff_dbo:.1f}%)",
+        f"DQO Removida<br>({eff_dqo:.1f}%)",
+        f"SST Removida<br>({eff_sst:.1f}%)",
+        "DBO₅ en Efluente",
+        "DQO en Efluente",
+        "SST en Efluente",
+    ]
+    s_source = [0, 0, 0, 0, 0, 0]
+    s_target = [1, 4, 2, 5, 3, 6]
+    s_values = [
+        D["dbo_e"] - D["dbo_s"], D["dbo_s"],
+        D["dqo_e"] - D["dqo_s"], D["dqo_s"],
+        D["sst_e"] - D["sst_s"], D["sst_s"],
+    ]
+    s_colors_node = [
+        "#1F4A3A",        # Afluente
+        VERDE, VERDE, VERDE,  # Removidas
+        ROJO, ROJO, ROJO,     # Efluentes
+    ]
+    s_colors_link = [
+        "rgba(14,158,99,0.30)", "rgba(214,69,43,0.22)",
+        "rgba(14,158,99,0.30)", "rgba(214,69,43,0.22)",
+        "rgba(14,158,99,0.30)", "rgba(214,69,43,0.22)",
+    ]
     fig_sank = go.Figure(go.Sankey(
+        arrangement="snap",
         node=dict(
-            pad=20, thickness=20,
-            color=[TEAL, VERDE, VERDE, VERDE, ROJO, ROJO, ROJO, TEAL],
-            label=labels,
-            line=dict(color="white", width=0.5)
+            pad=28, thickness=22,
+            color=s_colors_node,
+            label=s_labels,
+            line=dict(color="white", width=1),
+            hovertemplate="<b>%{label}</b><br>Flujo: %{value:.1f}<extra></extra>",
         ),
         link=dict(
-            source=source, target=target, value=values_sank,
-            color=[ROJO_O, VERDE_O2, ROJO_O, VERDE_O2, ROJO_O, VERDE_O2]
+            source=s_source, target=s_target, value=s_values,
+            color=s_colors_link,
+            hovertemplate="Flujo: %{value:.1f}<extra></extra>",
         )
     ))
-    fig_sank.update_layout(**{**PLOTLY_LAYOUT, "margin": MARGIN_DEFAULT, "font": dict(family="Inter", size=13, color=TEXTO)}, height=280,
-        title=dict(text="Distribución de remoción de carga orgánica y sólidos", font=dict(family="Space Grotesk", size=15)))
+    fig_sank.update_layout(
+        **{**PLOTLY_LAYOUT, "margin": dict(l=20, r=20, t=65, b=20),
+           "font": dict(family="Inter", size=13, color=TEXTO)},
+        height=340,
+        title=dict(
+            text="⬤ Flujo de remoción de contaminantes (mg/L)",
+            font=dict(family="Space Grotesk", size=15, color=TEXTO),
+        ),
+    )
     st.plotly_chart(fig_sank, use_container_width=True)
 
 
