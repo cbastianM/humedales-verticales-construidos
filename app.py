@@ -408,12 +408,12 @@ section[data-testid="stSidebar"] > div {{
 /* ── Header app ── */
 .app-header {{
     background: linear-gradient(120deg, {OSCURO} 0%, {TEAL} 100%);
-    border-radius: 16px;
-    padding: 26px 32px;
-    margin-bottom: 26px;
+    border-radius: 14px;
+    padding: 20px 28px;
+    margin-bottom: 18px;
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 16px;
     box-shadow: 0 4px 16px rgba(8,22,15,0.18);
 }}
 .app-title {{
@@ -520,17 +520,15 @@ MARGIN_POLAR   = dict(l=50, r=50, t=60, b=50)
 
 
 # ─── CONTROLES PRINCIPALES ────────────────────────────────────────────────────────
-st.markdown("### ⚙️ Configuración del Proyecto", unsafe_allow_html=True)
-
-col_config1, col_config2, col_config3 = st.columns([2, 1, 1])
-with col_config1:
-    nombre_proyecto = st.text_input("📋 Nombre del proyecto", "Poza Séptica Piloto")
-with col_config2:
+st.markdown('<div style="height: 0.5rem;"></div>', unsafe_allow_html=True)
+col_ctrl1, col_ctrl2, col_ctrl3 = st.columns([2.2, 1, 1], gap="small")
+with col_ctrl1:
+    nombre_proyecto = st.text_input("Proyecto", "Poza Séptica Piloto", label_visibility="collapsed")
+with col_ctrl2:
     modo = st.selectbox("Modo", ["Datos de ejemplo", "Ingreso manual"], label_visibility="collapsed")
-with col_config3:
-    poza = st.selectbox("Poza ref.", ["Poza #1 + #2", "Poza #1", "Poza #2"], label_visibility="collapsed")
-
-st.divider()
+with col_ctrl3:
+    poza = st.selectbox("Poza", ["Poza #1 + #2", "Poza #1", "Poza #2"], label_visibility="collapsed")
+st.markdown('<div style="height: 0.3rem;"></div>', unsafe_allow_html=True)
 
 
 
@@ -648,10 +646,9 @@ eff_global = np.mean([eff_dbo, eff_dqo, eff_sst, eff_ct])
 st.markdown(f"""
 <div class="app-header">
   <div class="app-logo">🌿</div>
-  <div>
+  <div style="flex: 1;">
     <div class="app-title">HydroWet · Diseño de Humedales Verticales</div>
-    <div class="app-subtitle">{nombre_proyecto} &nbsp;·&nbsp; {D['poza']} &nbsp;·&nbsp; 
-    Eficiencia global promedio: <strong>{eff_global:.1f}%</strong></div>
+    <div class="app-subtitle">{nombre_proyecto} &nbsp;·&nbsp; {D['poza']} &nbsp;·&nbsp; ⚡ {eff_global:.1f}%</div>
   </div>
 </div>
 """, unsafe_allow_html=True)
