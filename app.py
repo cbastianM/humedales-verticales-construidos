@@ -57,52 +57,25 @@ html, body, [class*="css"] {{
 
 /* ── Sidebar ── */
 section[data-testid="stSidebar"] {{
-    background: {OSCURO} !important;
-    border-right: 1px solid {TEAL};
+    background-color: {OSCURO} !important;
+    border-right: 2px solid {TEAL} !important;
 }}
-section[data-testid="stSidebar"] * {{
-    color: #E6F0E6 !important;
-    font-family: 'Inter', sans-serif !important;
-}}
-section[data-testid="stSidebar"] h3 {{
+section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {{
     color: #FFFFFF !important;
-    font-family: 'Space Grotesk', sans-serif !important;
-    font-weight: 700 !important;
 }}
-section[data-testid="stSidebar"] .stMarkdown strong {{
-    color: #FFFFFF !important;
+section[data-testid="stSidebar"] label {{
+    color: #B8D4BE !important;
     font-weight: 600 !important;
-}}
-section[data-testid="stSidebar"] .stSelectbox label,
-section[data-testid="stSidebar"] .stNumberInput label,
-section[data-testid="stSidebar"] .stTextInput label,
-section[data-testid="stSidebar"] .stSlider label {{
-    color: #9FC4A8 !important;
-    font-size: 0.74rem !important;
-    font-weight: 600 !important;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
 }}
 section[data-testid="stSidebar"] input {{
     background: #11261B !important;
     border: 1px solid #2E5C46 !important;
     color: #FFFFFF !important;
-    border-radius: 7px !important;
-    font-weight: 500 !important;
 }}
-section[data-testid="stSidebar"] input:focus {{
-    border-color: {VERDE} !important;
-    box-shadow: 0 0 0 2px rgba(14,158,99,0.25) !important;
-}}
-section[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] {{
-    background: #11261B !important;
-    border-color: #2E5C46 !important;
-}}
-section[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] * {{
-    color: #FFFFFF !important;
-}}
-section[data-testid="stSidebar"] hr {{
-    border-color: #234135 !important;
+
+/* ── Ensure sidebar is visible ── */
+section[data-testid="stSidebar"] > div {{
+    width: 280px !important;
 }}
 
 /* ── Tabs ── */
